@@ -1,26 +1,50 @@
 #!/usr/bin/python3
 import socket
 import select
+import logging
 
-commands = ["ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP", "CONF", "CWD", "DELE", "ENC", "EPRT", "EPSV", "FEAT", "HELP", "LANG", "LIST", "LPRT", "LPSV", "MDTM", "MIC", "MKD", "MLSD", "MLST", "MODE", "NLST", "NOOP", "OPTS", "PASV", "PBSZ", "PORT", "PROT", "PWD", "REIN", "REST", "RETR", "RMD", "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU", "STRU", "SYST", "TYPE", "XCUP", "XMKD", "XPWD", "XRCP", "XRMD", "XRSQ", "XSEM", "XSEN"]
+# todo: logger toutes les informations
+FORMAT = '%(asctime)-15s %(protocol)s %(host)-8s %(message)s'
+logging.basicConfig(filename='fuzz.log', format=FORMAT)
 
-def http_fuzz(method='GET', path="/", version="1.0", host="127.0.0.1",
-            useragent="UA", accept="text/html", data="test"):
-    # data pris en compte que si method == "POST"
-    req = "{} {} HTTP/{}\r\n".format(method, path, version)
-    req += "Host: {}\r\n".format(host)
-    req += "User-Agent: #{}\r\n".format(useragent)
-    req += "Accept: #{}\r\n".format(accept)
-    if method == "POST":
-        req += "Content-Length: #{}\r\n".format(len(data))
+def http_fuzz(http_headers, host="127.0.0.1", port="8080"):
+    
+    req = "{} {} HTTP/{}\r\n".format(http_headers['Method'], http_headers['Path'], http_headers['Version'])
+    for k, v in http_headers:
+        if k == 'method' 
+        or k == 'path' 
+        or k == 'version' 
+        or k == 'data':
+            continue
+        req += k
+        req += " "
+        req += v
+        req += "\r\n"
+
     req += "\r\n"
 
-    if method == "POST":
-        req += data
+    if http_headers['Method'] == "POST":
+        req += http_headers[data]
 
+    # loggg
     return req
 
-def ftp_fuzz(ip, port, size):
+def send_request(req, host, port, filename):
+    sock = socket.create_connection(("127.0.0.1", 8080))
+    sock.setblocking(0)
+    sock.send(req)
+    ready = select.select([sock], [], [], 1)
+    if ready[0]:
+        ans = sock.recv(1024)
+        #loggggg
+    else:
+        print("No answer! Found something?")
+        #logggg
+    sock.close()
+
+"""
+a revoir
+def ftp_fuzz(username, pass, method, ip="127.0.0.1", port="21", data):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	c = s.connect((ip, port))
 	rec = s.recv(1024)
@@ -41,4 +65,5 @@ def ftp_fuzz(ip, port, size):
 		else:
 			print("OK")
 	s.close()
+"""
 
