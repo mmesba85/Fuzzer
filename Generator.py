@@ -2,11 +2,14 @@ import random
 import string
 
 http_methods = ['GET', 'POST', 'HEAD', 'PUT']
-ftp_commands = ["ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP", "CONF", "CWD", "DELE", "ENC", "EPRT", "EPSV", "FEAT", "HELP", "LANG", "LIST", "LPRT", "LPSV", "MDTM", "MIC", "MKD", "MLSD", "MLST", "MODE", "NLST", "NOOP", "OPTS", "PASV", "PBSZ", "PORT", "PROT", "PWD", "REIN", "REST", "RETR", "RMD", "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU", "STRU", "SYST", "TYPE", "XCUP", "XMKD", "XPWD", "XRCP", "XRMD", "XRSQ", "XSEM", "XSEN"]
+ftp_commands = ["USER", "PASS", "ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP", "CONF", "CWD", "DELE", "ENC", "EPRT", "EPSV", "FEAT", "HELP", "LANG", "LIST", "LPRT", "LPSV", "MDTM", "MIC", "MKD", "MLSD", "MLST", "MODE", "NLST", "NOOP", "OPTS", "PASV", "PBSZ", "PORT", "PROT", "PWD", "REIN", "REST", "RETR", "RMD", "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU", "STRU", "SYST", "TYPE", "XCUP", "XMKD", "XPWD", "XRCP", "XRMD", "XRSQ", "XSEM", "XSEN"]
 http_headers_ = ["Method", "Path", "User-Agent", "Version", "Connection", "Accept", "Accept-Charset", "Accept-Datetime", "Origin", "Content-Language", "Content-Encoding", "Content-Length", "Data"]
 
 # reads file (yaml? json?) and build http_headers dict (comme le 
 # dict de generate http input)
+# le user a une liste de deux champs a remplir
+# la cle est le "header" et sa valeur
+# s'il donne que la clé alors la valeur est generee automatiquement
 def build_http_input(file):
     print("TODO")
 
@@ -26,7 +29,7 @@ def generate_http_input():
     http_headers['Method'] = get_random_method()
     http_headers['Path'] = get_random_path()
     http_headers['User-Agent'] = get_random_path()
-    http_headers['Version'] = get_random_version()
+    http_headers['Version'] = '1.1'
     http_headers['Connection'] = get_random_string()
     http_headers['Accept'] = get_random_string()
     http_headers['Accept-Charset'] = get_random_string()
@@ -39,8 +42,9 @@ def generate_http_input():
         http_headers['Data'] = get_random_string(200)
     return http_headers
 
-# in case the user doesn't give all the inputs 
-# we fill the structure with random input
+# apres que le user est donnee un fichier de config 
+# il peut specifier vouloir remplir les autres champs aleatoirement
+# optionnellement!
 def fill_http_input(http_headers):
     for h in http_headers_:
         if h not in http_headers:
@@ -49,7 +53,7 @@ def fill_http_input(http_headers):
             elif h == 'Method':
                 http_headers[h] = get_random_method()
             elif h == 'Path':
-                http_headers = get_random_path()
+                http_headers = '1.1'
             elif h == 'Version':
                 http_headers[h] = get_random_version()
             else:
@@ -72,9 +76,8 @@ def get_random_string(size=10):
 def get_random_method():
     return 'GET'
 
-def get_random_path():
-    return '/index.html'
+def get_random_path(size=3):
+    letters = string.ascii_lowercase
+    return '/'.join(random.choice(letters) for i in range(size))
 
-def get_random_version():
-    return '1.1'
 
