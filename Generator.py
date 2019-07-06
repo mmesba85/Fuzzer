@@ -1,3 +1,4 @@
+
 import random
 import string
 
@@ -17,7 +18,11 @@ def build_http_input(file):
 # generalement on reprend la premiere lettre ou la derniere
 # lettre et cette meme lettre on la rajoute plusieurs fois (debut/fin)
 def append_random(word, size=5):
-    print("TODO")
+    last_char = word[len(word)-1]
+    for i in range(size) :
+        word += last_char
+    print(word)
+    return word
 
 # rajouter d'autres header?
 # TODO:
@@ -81,3 +86,4 @@ def get_random_path(size=3):
     return '/'.join(random.choice(letters) for i in range(size))
 
 
+append_random('test', 7)
