@@ -1,6 +1,8 @@
+# coding: utf-8
 
 import random
 import string
+import json
 
 http_methods = ['GET', 'POST', 'HEAD', 'PUT']
 ftp_commands = ["USER", "PASS", "ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP", "CONF", "CWD", "DELE", "ENC", "EPRT", "EPSV", "FEAT", "HELP", "LANG", "LIST", "LPRT", "LPSV", "MDTM", "MIC", "MKD", "MLSD", "MLST", "MODE", "NLST", "NOOP", "OPTS", "PASV", "PBSZ", "PORT", "PROT", "PWD", "REIN", "REST", "RETR", "RMD", "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU", "STRU", "SYST", "TYPE", "XCUP", "XMKD", "XPWD", "XRCP", "XRMD", "XRSQ", "XSEM", "XSEN"]
@@ -11,8 +13,42 @@ http_headers_ = ["Method", "Path", "User-Agent", "Version", "Connection", "Accep
 # le user a une liste de deux champs a remplir
 # la cle est le "header" et sa valeur
 # s'il donne que la clé alors la valeur est generee automatiquement
+#
+# json plus facile pour la sérialisation
 def build_http_input(file):
-    print("TODO")
+    headers = {}
+    with open(file) as json_file:  
+        data = json.load(json_file)
+        print data
+        if 'Method' in data:
+            print data['Method']
+            headers['Method'] = data['Method']
+        if 'Path' in data:
+            headers['Path'] = data['Path']
+        if 'User-Agent' in data:
+            headers['User-Agent'] = data['User-Agent']
+        if 'Version' in data:
+            headers['Version'] = data['Version']
+        if 'Connection' in data:
+            headers['Connection'] = data['Connection']
+        if 'Accept' in data:
+            headers['Accept'] = data['Accept']
+        if 'Accept-Charset' in data:
+            headers['Accept-Charset'] = data['Accept-Charset']
+        if 'Accept-Datetime' in data:
+            headers['Accept-Datetime'] = data['Accept-Datetime']
+        if 'Origin' in data:
+            headers['Origin'] = data['Origin']
+        if 'Content-Language' in data:
+            headers['Content-Language'] = data['Content-Language']
+        if 'Content-Encoding' in data:
+            headers['Content-Encoding'] = data['Content-Encoding']
+            if 'Method' in data and headers['Method'] == 'POST':
+                if 'Content-Length' in data:
+                    headers['Content-Length'] = data['Content-Length']
+                if 'Data' in data:
+                    headers['Data'] = data['Data']
+    return headers
 
 # prend un mot et lui append des lettres de taille 5
 # generalement on reprend la premiere lettre ou la derniere
@@ -85,5 +121,3 @@ def get_random_path(size=3):
     letters = string.ascii_lowercase
     return '/'.join(random.choice(letters) for i in range(size))
 
-
-append_random('test', 7)
