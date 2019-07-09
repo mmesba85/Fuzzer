@@ -61,6 +61,20 @@ def append_random(word, size=5):
     print(word)
     return word
 
+# Bit Flipping function
+# the bits are flipped in some sequence or randomly
+def bit_flipping(word):
+    rand = randint(0, len(word)-1)
+    chars = random.sample(range(0, len(word)-1), rand)
+    flip_word = ''
+    for i in range(len(word)):
+        if i in chars:
+            extended = randint(0, 255)
+            flip_word += chr(extended)
+        else:
+            flip_word += word[i]
+    return flip_word
+
 # rajouter d'autres header?
 # TODO:
 # prendre en compte le fait que l'utilisateur puisse specifier
@@ -102,6 +116,10 @@ def fill_http_input(http_headers):
                 http_headers[h] = get_random_string()
     return http_headers
 
+# reads json file and build ftp_headers dict
+# le user a une liste de deux champs a remplir
+# la cle est le "header" et sa valeur
+# s'il donne que la clé alors la valeur est generee automatiquement
 def build_ftp_input(file):
     headers = defaultdict(list)
     with open(file) as json_file:  
@@ -117,6 +135,7 @@ def build_ftp_input(file):
             i += 1
     return headers
 
+# Build a ftp_headers dictionnary containing random commands 
 def generate_ftp_input(username='', password=''):
     ftp_headers = defaultdict(list)
     ftp_headers['Username'].append(username)
@@ -131,6 +150,7 @@ def generate_ftp_input(username='', password=''):
     print(ftp_headers)
     return ftp_headers
 
+# Get a list of n random ftp commands
 def get_random_ftp_command(n):
     rand = random.sample(range(0, len(ftp_commands)-1), n)
     ftps = []
@@ -157,5 +177,3 @@ def get_random_method():
 def get_random_path(size=3):
     letters = string.ascii_lowercase
     return '/'.join(random.choice(letters) for i in range(size))
-
-generate_ftp_input()
