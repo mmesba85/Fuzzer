@@ -1,14 +1,13 @@
 {
-    "Username": "tata",
-    "Password": "toto",
+    "Username": "test",
+    "Password": "test",
     "Commands" : [
         {
-            "Command": "c",
-            "Data": "data"
+            "Command": "VERSION",
+            "Data": "nyDlvmYlKcuXln29egVitbjMRkcZr5M5lvfWKD0WYMVYWTnbYI423llyvXG58t3peLAGKjpTkWmKj4NUcflYiKYQxBsLWjBCc9p9smIRUfI5UoWl8mtc2X9fREprS7d2qzO6bIPfuPDUzqzKEWK0LTJ9VnDlSmSkMKtQhb3B3ZcGbJDUh7EKaHzKdbNE4qFxMq64IlTrBEdbxacvc5TZA3ldSutBnSm7t73iNQyFvJ6c3BMPoQN1BjSJli5wnZ1O"
         },
         {
-            "Command": "c",
-            "Data": "data"
+            "Command": "VERSION"
         }
     ]   
 }

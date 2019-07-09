@@ -190,13 +190,18 @@ def get_random_path(size=3):
     letters = string.ascii_lowercase
     return '/'.join(random.choice(letters) for i in range(size))
 
-def move_data(data):
-    for k, v in data.items():
-        if type(v) is int:
-            data[k] = int(append_random(str(v)))
-        else:
-            data[k] = append_random(v)
-        print(v)
+def move_data(protocol, data):
+    if protocol == 'http':
+        for k, v in data.items():
+            if type(v) is int:
+                data[k] = int(append_random(str(v)))
+            else:
+                data[k] = append_random(v)
+            print(v)
+    else:
+        for k,v in data.items():
+            if type(k) is int:
+                data[k][1] = append_random(data[k][1])
     return data
 
 def get_sensitive_input(size=5):
@@ -208,8 +213,9 @@ def get_sensitive_input(size=5):
 
 def append_sensitive(protocol, data, size):
     for k, v in data.items():
-        if protocol == 'FTP':
-            print('TODO')
+        if protocol == 'ftp':
+            if type(k) is int:
+                data[k][1] = get_sensitive_input(size)
         else:
             if k == 'Content-Length':
                 data[k] = -1
