@@ -24,8 +24,12 @@ def build_http_input(file):
         data = json.load(json_file)
         if 'Method' in data:
             headers['Method'] = data['Method']
+        else:
+            headers['Method'] = get_random_method()
         if 'Path' in data:
             headers['Path'] = data['Path']
+        else:
+            headers['Path'] = get_random_path()
         if 'User-Agent' in data:
             headers['User-Agent'] = data['User-Agent']
         if 'Version' in data:
@@ -83,7 +87,7 @@ def bit_flipping(word):
 def generate_http_input():
     http_headers = {}
     http_headers['Method'] = get_random_method()
-    http_headers['Path'] = get_random_path()
+    http_headers['Path'] = c
     http_headers['User-Agent'] = get_random_path()
     http_headers['Version'] = '1.1'
     http_headers['Connection'] = get_random_string()
@@ -126,12 +130,20 @@ def build_ftp_input(file):
         data = json.load(json_file)
         if 'Username' in data:
             headers['Username'].append(data['Username'])
+        else:
+            headers['Username'].append('')
         if 'Password' in data:
             headers['Password'].append(data['Password'])
+        else:
+            headers['Password'].append('')
         i = 1
         for p in data['Commands']:
-            headers[i].append(p['Command'])
-            headers[i].append(p['Data'])
+            if 'Command' in p:
+                headers[i].append(p['Command'])
+            if 'Data' in p:
+                headers[i].append(p['Data'])
+            else:
+                headers[i].append(get_random_string())
             i += 1
     return headers
 
