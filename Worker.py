@@ -18,6 +18,12 @@ def fuzz(protocol, data, host, port, nloop=5, size=5):
         data = Generator.append_sensitive(protocol, data, size)
         req = http_fuzz(data, host, port)
         send_http_request(req, host, port)
+        data = Generator.move_data(data)
+    
+    data = Generator.append_sensitive(protocol, data, size)
+    req = http_fuzz(data, host, port)
+    print(req)
+    send_http_request(req, host, port)
 
     else:
         i = 0   

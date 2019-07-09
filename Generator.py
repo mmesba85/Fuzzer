@@ -10,6 +10,7 @@ from collections import defaultdict
 http_methods = ['GET', 'POST', 'HEAD', 'PUT']
 ftp_commands = ["USER", "PASS", "ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP", "CONF", "CWD", "DELE", "ENC", "EPRT", "EPSV", "FEAT", "HELP", "LANG", "LIST", "LPRT", "LPSV", "MDTM", "MIC", "MKD", "MLSD", "MLST", "MODE", "NLST", "NOOP", "OPTS", "PASV", "PBSZ", "PORT", "PROT", "PWD", "REIN", "REST", "RETR", "RMD", "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU", "STRU", "SYST", "TYPE", "XCUP", "XMKD", "XPWD", "XRCP", "XRMD", "XRSQ", "XSEM", "XSEN"]
 http_headers_ = ["Method", "Path", "User-Agent", "Version", "Connection", "Accept", "Accept-Charset", "Accept-Datetime", "Origin", "Content-Language", "Content-Encoding", "Content-Length", "Data"]
+str_dict = ['\n', '\r\n', '%s', '%x', '%n', '\0']
 
 # reads file (yaml? json?) and build http_headers dict (comme le 
 # dict de generate http input)
@@ -196,4 +197,22 @@ def move_data(data):
         else:
             data[k] = append_random(v)
         print(v)
+    return data
+
+def get_sensitive_input(size=5):
+    s = ""
+    r = random.randrange(0, len(str_dict)-1)
+    for i in range(0, size):
+        s = s + str_dict[r]
+    return s;
+
+def append_sensitive(protocol, data, size):
+    for k, v in data.items():
+        if protocol == 'FTP':
+            print('TODO')
+        else:
+            if k == 'Content-Length':
+                data[k] = -1
+            else:
+                data[k] = get_sensitive_input(size)
     return data
