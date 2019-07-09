@@ -1,8 +1,11 @@
 # coding: utf-8
 
 import random
+from random import randint
 import string
 import json
+
+from collections import defaultdict
 
 http_methods = ['GET', 'POST', 'HEAD', 'PUT']
 ftp_commands = ["USER", "PASS", "ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP", "CONF", "CWD", "DELE", "ENC", "EPRT", "EPSV", "FEAT", "HELP", "LANG", "LIST", "LPRT", "LPSV", "MDTM", "MIC", "MKD", "MLSD", "MLST", "MODE", "NLST", "NOOP", "OPTS", "PASV", "PBSZ", "PORT", "PROT", "PWD", "REIN", "REST", "RETR", "RMD", "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU", "STRU", "SYST", "TYPE", "XCUP", "XMKD", "XPWD", "XRCP", "XRMD", "XRSQ", "XSEM", "XSEN"]
@@ -19,9 +22,7 @@ def build_http_input(file):
     headers = {}
     with open(file) as json_file:  
         data = json.load(json_file)
-        print data
         if 'Method' in data:
-            print data['Method']
             headers['Method'] = data['Method']
         if 'Path' in data:
             headers['Path'] = data['Path']
@@ -101,6 +102,42 @@ def fill_http_input(http_headers):
                 http_headers[h] = get_random_string()
     return http_headers
 
+def build_ftp_input(file):
+    headers = defaultdict(list)
+    with open(file) as json_file:  
+        data = json.load(json_file)
+        if 'Username' in data:
+            headers['Username'].append(data['Username'])
+        if 'Password' in data:
+            headers['Password'].append(data['Password'])
+        i = 1
+        for p in data['Commands']:
+            headers[i].append(p['Command'])
+            headers[i].append(p['Data'])
+            i += 1
+    return headers
+
+def generate_ftp_input(username='', password=''):
+    ftp_headers = defaultdict(list)
+    ftp_headers['Username'].append(username)
+    ftp_headers['Password'].append(password)
+    nbr = randint(0, len(ftp_commands)-1)
+    cmd = get_random_ftp_command(nbr)
+    j = 1
+    for i in cmd : 
+        ftp_headers[j].append(i)
+        ftp_headers[j].append(get_random_string())
+        j += 1
+    print(ftp_headers)
+    return ftp_headers
+
+def get_random_ftp_command(n):
+    rand = random.sample(range(0, len(ftp_commands)-1), n)
+    ftps = []
+    for i in rand:
+        ftps.append(ftp_commands[i])
+    return ftps
+
 def get_random_int(size=10):
     i = 1
     s = '9'
@@ -121,3 +158,4 @@ def get_random_path(size=3):
     letters = string.ascii_lowercase
     return '/'.join(random.choice(letters) for i in range(size))
 
+generate_ftp_input()

@@ -1,0 +1,14 @@
+{
+    "Username": "tata",
+    "Password": "toto",
+    "Commands" : [
+        {
+            "Command": "c",
+            "Data": "data"
+        },
+        {
+            "Command": "c",
+            "Data": "data"
+        }
+    ]   
+}
