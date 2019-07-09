@@ -17,7 +17,24 @@ parser.add_argument("-f", type=str,
                     help="Config file")
 parser.add_argument("-l", type=str,
                     help="Log file", default='fuzz.log')
+parser.add_argument("-run", type=int,
+                    help="Number of runs", default=10)
+parser.add_argument("-u", type=str,
+                    help="FTP connection username", default="")
+parser.add_argument("-pw", type=str,
+                    help="FTP connection password", default="")
+parser.add_argument("-msize", type=int,
+                    help="Maximum size of the inpot", default=200)
+
 args = parser.parse_args()
+
+logger = logging.getLogger("mainlogger")
+handler = logging.FileHandler(args.l)
+formatter = logging.Formatter(
+        '%(asctime)s %(levelname)-5s %(protocol)-5s %(host)-5s %(action)-5s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 if args.P is None:
     if args.T == 'FTP':
@@ -25,19 +42,23 @@ if args.P is None:
     else:
         args.P = 8080
 
+data = {}
 if args.f is None:
     if args.T == 'FTP':
-        data = Generator.get_random_string()
-        # appel a la methode principale de fuzz
+        data = Generator.generate_ftp_input(args.u, args.pw)
     else:
-        http_headers = Generator.generate_http_input()
-        Worker.http_fuzz(http_headers, args.H, args.P) #provisoire
+        data = Generator.generate_http_input()
 
-logger = logging.getLogger()
-handler = logging.FileHandler(args.l)
-formatter = logging.Formatter(
-        '%(asctime)s %(protocol)-12s %(host)-12s %(action)-8s %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+else:
+    if args.T == 'FTP':
+        data = Generator.build_ftp_input(args.f)
+    else:
+        data = Generator.build_http_input(args.f)
+
+if args.T == 'FTP':
+    Worker.fuzz('ftp', data, args.H, args.P, args.run, args.msize)
+else:
+    Worker.fuzz('http', data, args.H, args.P, args.run, args.msize)
+
+
 

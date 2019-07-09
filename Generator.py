@@ -62,7 +62,6 @@ def append_random(word, size=5):
     last_char = word[len(word)-1]
     for i in range(size) :
         word += last_char
-    print(word)
     return word
 
 # Bit Flipping function
@@ -189,3 +188,12 @@ def get_random_method():
 def get_random_path(size=3):
     letters = string.ascii_lowercase
     return '/'.join(random.choice(letters) for i in range(size))
+
+def move_data(data):
+    for k, v in data.items():
+        if type(v) is int:
+            data[k] = int(append_random(str(v)))
+        else:
+            data[k] = append_random(v)
+        print(v)
+    return data
