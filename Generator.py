@@ -12,13 +12,7 @@ ftp_commands = ["USER", "PASS", "ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", 
 http_headers_ = ["Method", "Path", "User-Agent", "Version", "Connection", "Accept", "Accept-Charset", "Accept-Datetime", "Origin", "Content-Language", "Content-Encoding", "Content-Length", "Data"]
 str_dict = ['\n', '\r\n', '%s', '%x', '%n', '\0']
 
-# reads file (yaml? json?) and build http_headers dict (comme le 
-# dict de generate http input)
-# le user a une liste de deux champs a remplir
-# la cle est le "header" et sa valeur
-# s'il donne que la clé alors la valeur est generee automatiquement
-#
-# json plus facile pour la sérialisation
+# build input dictionary from configuration file
 def build_http_input(file):
     headers = {}
     with open(file) as json_file:  
@@ -54,6 +48,7 @@ def build_http_input(file):
                     headers['Content-Length'] = data['Content-Length']
                 if 'Data' in data:
                     headers['Data'] = data['Data']
+    fill_http_input(headers)
     return headers
 
 # prend un mot et lui append des lettres de taille 5
@@ -67,7 +62,7 @@ def append_random(word, size=5):
 
 # Bit Flipping function
 # the bits are flipped in some sequence or randomly
-def bit_flipping(word):
+def bit_flipping_str(word):
     rand = randint(0, len(word)-1)
     chars = random.sample(range(0, len(word)-1), rand)
     flip_word = ''
@@ -79,11 +74,24 @@ def bit_flipping(word):
             flip_word += word[i]
     return flip_word
 
-# rajouter d'autres header?
-# TODO:
-# prendre en compte le fait que l'utilisateur puisse specifier
-# vouloir fuzzer que certain champs
-# il peut aussi proposer une chaine de caractere pour ces champs
+def bit_flipping_int(num):
+    bin_a = bin(num)
+    str_num = str(bin_a)
+    rand = randint(0, len(str_num)-1)
+    to_change = random.sample(range(0, len(str_num)-1), rand)
+    flip_num_str = str_num[0]
+    for i in range(1, len(str_num)):
+        if i in to_change:
+            if str_num[i] == '0':
+                flip_num_str += '1'
+            else:
+                flip_num_str += '0'
+        else:
+            flip_num_str += str_num[i]
+    res = int(flip_num_str, 2)
+    return res
+
+# generate random inputs
 def generate_http_input():
     http_headers = {}
     http_headers['Method'] = get_random_method()
@@ -102,9 +110,7 @@ def generate_http_input():
         http_headers['Data'] = get_random_string(200)
     return http_headers
 
-# apres que le user est donnee un fichier de config 
-# il peut specifier vouloir remplir les autres champs aleatoirement
-# optionnellement!
+# build input dictionary from configuration file
 def fill_http_input(http_headers):
     for h in http_headers_:
         if h not in http_headers:
@@ -113,17 +119,14 @@ def fill_http_input(http_headers):
             elif h == 'Method':
                 http_headers[h] = get_random_method()
             elif h == 'Path':
-                http_headers = '1.1'
+                http_headers = get_random_path()
             elif h == 'Version':
                 http_headers[h] = get_random_version()
             else:
                 http_headers[h] = get_random_string()
     return http_headers
 
-# reads json file and build ftp_headers dict
-# le user a une liste de deux champs a remplir
-# la cle est le "header" et sa valeur
-# s'il donne que la clé alors la valeur est generee automatiquement
+# generate random inputs
 def build_ftp_input(file):
     headers = defaultdict(list)
     with open(file) as json_file:  
@@ -159,7 +162,6 @@ def generate_ftp_input(username='', password=''):
         ftp_headers[j].append(i)
         ftp_headers[j].append(get_random_string())
         j += 1
-    print(ftp_headers)
     return ftp_headers
 
 # Get a list of n random ftp commands
@@ -170,6 +172,7 @@ def get_random_ftp_command(n):
         ftps.append(ftp_commands[i])
     return ftps
 
+# generate random int from 0 to size
 def get_random_int(size=10):
     i = 1
     s = '9'
@@ -179,31 +182,46 @@ def get_random_int(size=10):
         s = s + '9'
     return random.randrange(i, int(s))
 
+# generate random string with size length
 def get_random_string(size=10):
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(size))
 
+# generate random http method
 def get_random_method():
-    return 'GET'
+    r = random.randrange(0, len(http_methods)-1)
+    return http_methods[r]
 
+# generate random path for http protocol
 def get_random_path(size=3):
     letters = string.ascii_lowercase
     return '/'.join(random.choice(letters) for i in range(size))
 
-def move_data(protocol, data):
+# apply random mutation or bit flipping
+def move_data(protocol, data, method):
     if protocol == 'http':
         for k, v in data.items():
             if type(v) is int:
-                data[k] = int(append_random(str(v)))
+                if method == 'random':
+                    data[k] = int(append_random(str(v)))
+                else:
+                    data[k] = bit_flipping_int(v)
+                    print(data[k])
             else:
-                data[k] = append_random(v)
-            print(v)
+                if method == 'random':
+                    data[k] = append_random(v)
+                else:
+                   data[k] = bit_flipping_str(v)       
     else:
         for k,v in data.items():
             if type(k) is int:
-                data[k][1] = append_random(data[k][1])
+                if method == 'random':
+                    data[k][1] = append_random(data[k][1])
+                else:
+                    data[k][1] = bit_flipping_str(data[k][1])          
     return data
 
+# generate sensitive input
 def get_sensitive_input(size=5):
     s = ""
     r = random.randrange(0, len(str_dict)-1)
@@ -211,6 +229,7 @@ def get_sensitive_input(size=5):
         s = s + str_dict[r]
     return s;
 
+# build sensitive input
 def append_sensitive(protocol, data, size):
     for k, v in data.items():
         if protocol == 'ftp':

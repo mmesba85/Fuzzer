@@ -3,9 +3,7 @@ import logging
 import Worker
 import Generator
 
-# MAIN 
 
-# NOT FINISHED
 parser = argparse.ArgumentParser()
 parser.add_argument("-H", type=str,
                     help="Host to fuzz", default='127.0.0.1')
@@ -24,7 +22,9 @@ parser.add_argument("-u", type=str,
 parser.add_argument("-pw", type=str,
                     help="FTP connection password", default="")
 parser.add_argument("-msize", type=int,
-                    help="Maximum size of the inpot", default=200)
+                    help="Maximum size of the input", default=200)
+parser.add_argument("-m", type=str,
+                    help="Mutation technique", default="random", choices=['random', 'flip'])
 
 args = parser.parse_args()
 
@@ -56,9 +56,9 @@ else:
         data = Generator.build_http_input(args.f)
 
 if args.T == 'FTP':
-    Worker.fuzz('ftp', data, args.H, args.P, args.run, args.msize)
+    Worker.fuzz('ftp', data, args.H, args.P, args.run, args.msize, args.m)
 else:
-    Worker.fuzz('http', data, args.H, args.P, args.run, args.msize)
+    Worker.fuzz('http', data, args.H, args.P, args.run, args.msize, args.m)
 
 
 
