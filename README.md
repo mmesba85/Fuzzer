@@ -1,8 +1,8 @@
 # Fuzzer
 
 ### Authors
-* Mesbahi Maroua
-* Li Melissa
+* Mesbahi Maroua: maroua.mesbahi@epita.fr   
+* Li Melissa: melissa.li@epita.fr
 
 
 ### Usage
@@ -23,3 +23,10 @@ optional arguments:
   -msize MSIZE      Maximum size of the input
   -m {random,flip}  Mutation technique
   ```
+
+  ### Test
+  Le répértoire ./tests contients deux serveurs de tests:
+  * sws: serveur http
+  * my_ftpd: serveur ftp
+
+  Le répértoire racine contient de plus deux fichiers de configurations que l'utilisateur peut fournir en entrée du programme.
