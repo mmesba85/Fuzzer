@@ -1,4 +1,4 @@
-# Fuzzer
+# MyFuzzer
 
 ### Authors
 * Mesbahi Maroua: maroua.mesbahi@epita.fr   
